@@ -1,0 +1,223 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Personal Health Dashboard</title>
+    <!-- Tailwind CSS CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Chart.js CDN -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <!-- Google Fonts (Kanit) -->
+    <link href="https://fonts.googleapis.com/css2?family=Kanit:wght@300;400;500;600&display=swap" rel="stylesheet">
+    <style>
+        body {
+            font-family: 'Kanit', sans-serif;
+            background-color: #f8fafc;
+        }
+    </style>
+</head>
+<body class="p-4 md:p-8 text-slate-800">
+
+    <div class="max-w-6xl mx-auto space-y-6">
+        
+        <!-- Header -->
+        <div class="flex flex-col md:flex-row md:items-center justify-between gap-4 bg-white p-6 rounded-2xl shadow-sm border border-slate-100">
+            <div>
+                <h1 class="text-2xl font-bold text-slate-900">สรุปสุขภาพประจำสัปดาห์</h1>
+                <p class="text-slate-500 text-sm">7 - 13 กันยายน | น้ำหนักตัวปัจจุบัน 85 กก.</p>
+            </div>
+            <div class="flex gap-2">
+                <span class="inline-flex items-center px-3 py-1 rounded-full text-xs font-medium bg-emerald-50 text-emerald-700 border border-emerald-200">
+                    ● ออกกำลังกายสม่ำเสมอ
+                </span>
+                <span class="inline-flex items-center px-3 py-1 rounded-full text-xs font-medium bg-amber-50 text-amber-700 border border-amber-200">
+                    ▲ ควรเพิ่มการดื่มน้ำ
+                </span>
+            </div>
+        </div>
+
+        <!-- KPI Cards -->
+        <div class="grid grid-cols-2 lg:grid-cols-4 gap-4">
+            <!-- KPI 1 -->
+            <div class="bg-white p-5 rounded-2xl shadow-sm border border-slate-100">
+                <div class="text-slate-500 text-sm font-medium">วันออกกำลังกาย</div>
+                <div class="text-3xl font-bold text-slate-900 mt-2">7 <span class="text-base font-normal text-slate-500">วัน</span></div>
+                <div class="text-xs text-emerald-600 mt-2 font-medium">✓ ครบ 100% ของสัปดาห์</div>
+            </div>
+            <!-- KPI 2 -->
+            <div class="bg-white p-5 rounded-2xl shadow-sm border border-slate-100">
+                <div class="text-slate-500 text-sm font-medium">เวลารวมออกกำลังกาย</div>
+                <div class="text-3xl font-bold text-slate-900 mt-2">300 <span class="text-base font-normal text-slate-500">นาที</span></div>
+                <div class="text-xs text-emerald-600 mt-2 font-medium">✓ เฉลี่ย 42.8 นาที/วัน</div>
+            </div>
+            <!-- KPI 3 -->
+            <div class="bg-white p-5 rounded-2xl shadow-sm border border-slate-100">
+                <div class="text-slate-500 text-sm font-medium">ชั่วโมงนอนเฉลี่ย</div>
+                <div class="text-3xl font-bold text-slate-900 mt-2">6.6 <span class="text-base font-normal text-slate-500">ชม./วัน</span></div>
+                <div class="text-xs text-amber-600 mt-2 font-medium">! ต่ำกว่าเกณฑ์เล็กน้อย (7-8 ชม.)</div>
+            </div>
+            <!-- KPI 4 -->
+            <div class="bg-white p-5 rounded-2xl shadow-sm border border-slate-100">
+                <div class="text-slate-500 text-sm font-medium">ปริมาณน้ำเฉลี่ย</div>
+                <div class="text-3xl font-bold text-slate-900 mt-2">1.54 <span class="text-base font-normal text-slate-500">ลิตร/วัน</span></div>
+                <div class="text-xs text-rose-600 mt-2 font-medium">! ควรเพิ่มเป็น 2.8-3.0 ลิตร</div>
+            </div>
+        </div>
+
+        <!-- Main Content Grid -->
+        <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+            
+            <!-- Chart Section (2 Cols) -->
+            <div class="lg:col-span-2 bg-white p-6 rounded-2xl shadow-sm border border-slate-100 flex flex-col justify-between">
+                <div class="mb-4">
+                    <h2 class="text-lg font-bold text-slate-900">แนวโน้มการนอนและปริมาณน้ำ (7 วัน)</h2>
+                    <p class="text-slate-400 text-sm">เปรียบเทียบชั่วโมงการนอนหลับและการดื่มน้ำรายวัน</p>
+                </div>
+                <div class="relative w-full h-72 md:h-80">
+                    <canvas id="healthChart"></canvas>
+                </div>
+            </div>
+
+            <!-- Activity List (1 Col) -->
+            <div class="bg-white p-6 rounded-2xl shadow-sm border border-slate-100">
+                <h2 class="text-lg font-bold text-slate-900 mb-4">รายการกิจกรรมประจำวัน</h2>
+                <div class="space-y-3 overflow-y-auto max-h-[340px] pr-1">
+                    
+                    <div class="flex items-center justify-between p-3 rounded-xl bg-slate-50 hover:bg-slate-100 transition-colors">
+                        <div>
+                            <p class="font-medium text-slate-800 text-sm">จ. 7 ก.ย. — วิ่ง 30 นาที</p>
+                            <p class="text-xs text-slate-500">นอน 7.2 ชม. | น้ำ 1.8 ลิตร</p>
+                        </div>
+                        <span class="text-xs font-semibold px-2 py-1 bg-blue-100 text-blue-700 rounded-md">วิ่ง</span>
+                    </div>
+
+                    <div class="flex items-center justify-between p-3 rounded-xl bg-slate-50 hover:bg-slate-100 transition-colors">
+                        <div>
+                            <p class="font-medium text-slate-800 text-sm">อ. 8 ก.ย. — ปั่นจักรยาน 45 นาที</p>
+                            <p class="text-xs text-slate-500">นอน 6.5 ชม. | น้ำ 1.5 ลิตร</p>
+                        </div>
+                        <span class="text-xs font-semibold px-2 py-1 bg-emerald-100 text-emerald-700 rounded-md">ปั่นจักรยาน</span>
+                    </div>
+
+                    <div class="flex items-center justify-between p-3 rounded-xl bg-slate-50 hover:bg-slate-100 transition-colors">
+                        <div>
+                            <p class="font-medium text-slate-800 text-sm">พ. 9 ก.ย. — เดิน 45 นาที</p>
+                            <p class="text-xs text-slate-500">นอน 6.5 ชม. | น้ำ 1.5 ลิตร</p>
+                        </div>
+                        <span class="text-xs font-semibold px-2 py-1 bg-purple-100 text-purple-700 rounded-md">เดิน</span>
+                    </div>
+
+                    <div class="flex items-center justify-between p-3 rounded-xl bg-slate-50 hover:bg-slate-100 transition-colors">
+                        <div>
+                            <p class="font-medium text-slate-800 text-sm">พฤ. 10 ก.ย. — ว่ายน้ำ 45 นาที</p>
+                            <p class="text-xs text-slate-500">นอน 6.5 ชม. | น้ำ 1.5 ลิตร</p>
+                        </div>
+                        <span class="text-xs font-semibold px-2 py-1 bg-cyan-100 text-cyan-700 rounded-md">ว่ายน้ำ</span>
+                    </div>
+
+                    <div class="flex items-center justify-between p-3 rounded-xl bg-slate-50 hover:bg-slate-100 transition-colors">
+                        <div>
+                            <p class="font-medium text-slate-800 text-sm">ศ. 11 ก.ย. — ปั่นจักรยาน 45 นาที</p>
+                            <p class="text-xs text-slate-500">นอน 6.5 ชม. | น้ำ 1.5 ลิตร</p>
+                        </div>
+                        <span class="text-xs font-semibold px-2 py-1 bg-emerald-100 text-emerald-700 rounded-md">ปั่นจักรยาน</span>
+                    </div>
+
+                    <div class="flex items-center justify-between p-3 rounded-xl bg-slate-50 hover:bg-slate-100 transition-colors">
+                        <div>
+                            <p class="font-medium text-slate-800 text-sm">ส. 12 ก.ย. — ปั่นจักรยาน 45 นาที</p>
+                            <p class="text-xs text-slate-500">นอน 6.5 ชม. | น้ำ 1.5 ลิตร</p>
+                        </div>
+                        <span class="text-xs font-semibold px-2 py-1 bg-emerald-100 text-emerald-700 rounded-md">ปั่นจักรยาน</span>
+                    </div>
+
+                    <div class="flex items-center justify-between p-3 rounded-xl bg-slate-50 hover:bg-slate-100 transition-colors">
+                        <div>
+                            <p class="font-medium text-slate-800 text-sm">อา. 13 ก.ย. — ปั่นจักรยาน 45 นาที</p>
+                            <p class="text-xs text-slate-500">นอน 6.5 ชม. | น้ำ 1.5 ลิตร</p>
+                        </div>
+                        <span class="text-xs font-semibold px-2 py-1 bg-emerald-100 text-emerald-700 rounded-md">ปั่นจักรยาน</span>
+                    </div>
+
+                </div>
+            </div>
+
+        </div>
+    </div>
+
+    <!-- Chart Script -->
+    <script>
+        const ctx = document.getElementById('healthChart').getContext('2d');
+        new Chart(ctx, {
+            type: 'line',
+            data: {
+                labels: ['7 ก.ย.', '8 ก.ย.', '9 ก.ย.', '10 ก.ย.', '11 ก.ย.', '12 ก.ย.', '13 ก.ย.'],
+                datasets: [
+                    {
+                        label: 'ชั่วโมงนอน (ชม.)',
+                        data: [7.2, 6.5, 6.5, 6.5, 6.5, 6.5, 6.5],
+                        borderColor: '#6366f1',
+                        backgroundColor: 'rgba(99, 102, 241, 0.1)',
+                        borderWidth: 2.5,
+                        tension: 0.3,
+                        fill: true,
+                        yAxisID: 'y'
+                    },
+                    {
+                        label: 'ปริมาณน้ำ (ลิตร)',
+                        data: [1.8, 1.5, 1.5, 1.5, 1.5, 1.5, 1.5],
+                        borderColor: '#06b6d4',
+                        backgroundColor: 'rgba(6, 182, 212, 0.1)',
+                        borderWidth: 2.5,
+                        tension: 0.3,
+                        fill: true,
+                        yAxisID: 'y1'
+                    }
+                ]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                interaction: {
+                    mode: 'index',
+                    intersect: false,
+                },
+                plugins: {
+                    legend: {
+                        position: 'top',
+                        labels: {
+                            font: { family: 'Kanit' }
+                        }
+                    }
+                },
+                scales: {
+                    x: {
+                        grid: { display: false },
+                        ticks: { font: { family: 'Kanit' } }
+                    },
+                    y: {
+                        type: 'linear',
+                        display: true,
+                        position: 'left',
+                        title: { display: true, text: 'ชั่วโมงนอน', font: { family: 'Kanit' } },
+                        min: 4,
+                        max: 10,
+                        ticks: { font: { family: 'Kanit' } }
+                    },
+                    y1: {
+                        type: 'linear',
+                        display: true,
+                        position: 'right',
+                        title: { display: true, text: 'น้ำ (ลิตร)', font: { family: 'Kanit' } },
+                        min: 0,
+                        max: 4,
+                        grid: { drawOnChartArea: false },
+                        ticks: { font: { family: 'Kanit' } }
+                    }
+                }
+            }
+        });
+    </script>
+</body>
+</html>
